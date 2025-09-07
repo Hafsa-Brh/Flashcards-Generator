@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Learning | AI-Powered Education Platform</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <!-- Navigation Bar -->
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <div class="logo">
+                        <i class="fas fa-home"></i>
+                        <span>Smart Learning</span>
+                    </div>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="/" class="nav-link active">
+                        <i class="fas fa-cards-blank"></i>
+                        <span>Flashcards</span>
+                    </a>
+                    <a href="/summary" class="nav-link">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Summary</span>
+                    </a>
+                    <a href="/quiz" class="nav-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Quiz</span>
+                    </a>
+                    <a href="/study-plan" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Study Plan</span>
+                    </a>
+                    <a href="/dashboard" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-user"></i>
+                        <span>Account</span>
+                    </button>
+                </div>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+            
+            <div class="header-decoration"></div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="hero-section">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Intelligent Learning</span>
+                    <span class="subtitle">Made Simple</span>
+                </h1>
+                <p class="hero-description">
+                    Upload your study materials and let our AI create personalized flashcards 
+                    that adapt to your learning style. Support for PDFs, documents, and more.
+                </p>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <div class="upload-container" id="uploadContainer">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">
+                            <h3>Drop your files here</h3>
+                            <p>or <span class="browse-link">browse to upload</span></p>
+                        </div>
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md,.html" hidden>
+                    </div>
+                    
+                    <div class="supported-formats">
+                        <h4>Supported Formats:</h4>
+                        <div class="format-tags">
+                            <span class="format-tag">PDF</span>
+                            <span class="format-tag">DOCX</span>
+                            <span class="format-tag">TXT</span>
+                            <span class="format-tag">MD</span>
+                            <span class="format-tag">HTML</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing Status -->
+            <div class="processing-section" id="processingSection" style="display: none;">
+                <div class="processing-card">
+                    <div class="processing-header">
+                        <div class="processing-icon">
+                            <i class="fas fa-cog fa-spin"></i>
+                        </div>
+                        <h3>Generating Your Flashcards</h3>
+                        <p id="processingFile">Processing...</p>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="progressPercent">0%</span>
+                            <span id="progressStatus">Initializing...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="processing-steps">
+                        <div class="step" id="step-load">
+                            <i class="fas fa-file-upload"></i>
+                            <span>Loading document</span>
+                        </div>
+                        <div class="step" id="step-process">
+                            <i class="fas fa-magic"></i>
+                            <span>AI processing</span>
+                        </div>
+                        <div class="step" id="step-generate">
+                            <i class="fas fa-copy"></i>
+                            <span>Creating flashcards</span>
+                        </div>
+                        <div class="step" id="step-complete">
+                            <i class="fas fa-check"></i>
+                            <span>Complete!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <h2>Why Choose Smart Learning?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>AI-Powered</h3>
+                        <p>Advanced language models create meaningful question-answer pairs from your content</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Lightning Fast</h3>
+                        <p>Generate dozens of flashcards in seconds with our optimized processing pipeline</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Multi-Format</h3>
+                        <p>Support for PDFs, Word documents, text files, Markdown, and HTML content</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h3>Export Ready</h3>
+                        <p>Download as JSON for seamless integration with your favorite study applications</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Secure & Private</h3>
+                        <p>Your documents are processed securely with enterprise-grade privacy protection</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Cross-Platform</h3>
+                        <p>Access your learning materials anywhere - desktop, tablet, or mobile device</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Professional Footer -->
+        <footer class="footer">
+            <div class="footer-main">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <i class="fas fa-home"></i>
+                            <span>Smart Learning</span>
+                        </div>
+                        <p class="footer-tagline">Empowering education through AI innovation</p>
+                        <div class="footer-social">
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Learning Tools</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Flashcards Generator</a></li>
+                        <li><a href="/summary">AI Summarizer</a></li>
+                        <li><a href="/quiz">Quiz Creator</a></li>
+                        <li><a href="/study-plan">Study Planner</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/docs">Documentation</a></li>
+                        <li><a href="/tutorials">Tutorials</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/api">API Reference</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/community">Community</a></li>
+                        <li><a href="/status">System Status</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 Smart Learning Platform. All rights reserved.</p>
+                </div>
+                <div class="footer-legal">
+                    <span class="footer-badge">
+                        <i class="fas fa-shield-check"></i>
+                        SOC 2 Certified
+                    </span>
+                    <span class="footer-badge">
+                        <i class="fas fa-lock"></i>
+                        GDPR Compliant
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

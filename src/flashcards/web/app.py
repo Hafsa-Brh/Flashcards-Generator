@@ -15,15 +15,20 @@ from datetime import datetime
 from typing import List, Optional
 import tempfile
 import os
+import logging
 
 # Import our flashcard generation components
 from ..pipeline import FlashcardPipeline
 from ..schemas import Source, SourceType
 
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Initialize FastAPI app with professional metadata
 app = FastAPI(
-    title="AI Flashcards Generator",
-    description="Professional AI-powered flashcard generation from documents",
+    title="Smart Learning Platform",
+    description="AI-powered e-learning platform with flashcards, summaries, quizzes, and study plans",
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc"
@@ -135,59 +140,78 @@ async def download_flashcards(generation_id: str):
 
 async def process_flashcards(generation_id: str, file_path: str, filename: str):
     """Background task to process flashcards"""
+    import time
+    start_time = time.time()
+    
     try:
+        logger.info(f"Starting flashcard generation for {filename}")
+        
         # Update progress
         generations[generation_id]["progress"] = 10
+        logger.info(f"Progress: 10% - Initializing")
         
         # Determine source type
         extension = Path(filename).suffix.lower()
         source_type_map = {
             '.md': SourceType.MARKDOWN,
-            '.txt': SourceType.TEXT,
+            '.txt': SourceType.TXT,
             '.pdf': SourceType.PDF,
             '.docx': SourceType.DOCX,
             '.html': SourceType.HTML
         }
         
-        source_type = source_type_map.get(extension, SourceType.TEXT)
+        source_type = source_type_map.get(extension, SourceType.TXT)
+        logger.info(f"Detected source type: {source_type} for extension {extension}")
         
         # Initialize pipeline
         pipeline = FlashcardPipeline()
         generations[generation_id]["progress"] = 30
+        logger.info(f"Progress: 30% - Pipeline initialized")
         
         # Load document
+        logger.info(f"Loading document from: {file_path}")
         source = await asyncio.get_event_loop().run_in_executor(
             None, 
             lambda: pipeline.load_source(file_path, source_type)
         )
         generations[generation_id]["progress"] = 50
+        logger.info(f"Progress: 50% - Document loaded: {source.title}")
         
         # Generate flashcards
+        logger.info(f"Starting flashcard generation...")
         deck = await asyncio.get_event_loop().run_in_executor(
             None,
             lambda: pipeline.generate_flashcards(source)
         )
         generations[generation_id]["progress"] = 90
+        logger.info(f"Progress: 90% - Generated {len(deck.cards)} flashcards")
         
         # Format flashcards for display
         flashcards = []
         for card in deck.cards:
             flashcards.append({
-                "id": card.id,
+                "id": str(card.id),
                 "front": card.front,
                 "back": card.back,
-                "chunk_id": card.chunk_id
+                "chunk_id": str(card.chunk_id)
             })
         
         # Update final status
+        end_time = time.time()
+        processing_time = end_time - start_time
+        
         generations[generation_id].update({
             "status": "completed",
             "flashcards": flashcards,
             "progress": 100,
-            "total_cards": len(flashcards)
+            "total_cards": len(flashcards),
+            "processing_time": round(processing_time, 2)
         })
         
+        logger.info(f"Successfully completed flashcard generation: {len(flashcards)} cards created")
+        
     except Exception as e:
+        logger.error(f"Flashcard generation failed: {str(e)}", exc_info=True)
         generations[generation_id].update({
             "status": "error",
             "error": str(e),
@@ -198,8 +222,9 @@ async def process_flashcards(generation_id: str, file_path: str, filename: str):
         # Clean up temporary file
         try:
             os.unlink(file_path)
-        except:
-            pass
+            logger.info(f"Cleaned up temporary file: {file_path}")
+        except Exception as e:
+            logger.warning(f"Failed to clean up temp file {file_path}: {e}")
 
 if __name__ == "__main__":
     import uvicorn

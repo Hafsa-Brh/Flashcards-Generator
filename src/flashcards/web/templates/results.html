@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Flashcards | Smart Learning Platform</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/results.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <!-- Navigation Bar -->
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <div class="logo">
+                        <i class="fas fa-home"></i>
+                        <span>Smart Learning</span>
+                    </div>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="/" class="nav-link active">
+                        <i class="fas fa-cards-blank"></i>
+                        <span>Flashcards</span>
+                    </a>
+                    <a href="/summary" class="nav-link">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Summary</span>
+                    </a>
+                    <a href="/quiz" class="nav-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Quiz</span>
+                    </a>
+                    <a href="/study-plan" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Study Plan</span>
+                    </a>
+                    <a href="/dashboard" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-user"></i>
+                        <span>Account</span>
+                    </button>
+                </div>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Action Buttons Below Navbar -->
+        <div class="action-buttons-section">
+            <div class="action-buttons">
+                <a href="/" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Create More
+                </a>
+                <a href="/api/download/{{ generation_id }}" class="btn btn-primary" download>
+                    <i class="fas fa-download"></i>
+                    Download JSON
+                </a>
+            </div>
+        </div>
+
+        <!-- Results Header -->
+        <div class="results-header">
+            <div class="results-title">
+                <h1>
+                    <i class="fas fa-check-circle success-icon"></i>
+                    Flashcards Generated Successfully!
+                </h1>
+                <p class="results-subtitle">
+                    Generated <strong>{{ generation.total_cards }}</strong> flashcards from 
+                    <strong>{{ generation.filename }}</strong>
+                </p>
+            </div>
+            
+            <div class="results-actions">
+                <button class="btn btn-secondary" onclick="copyToClipboard()">
+                    <i class="fas fa-copy"></i>
+                    Copy All
+                </button>
+                <button class="btn btn-secondary" onclick="toggleViewMode()">
+                    <i class="fas fa-th-large" id="viewToggleIcon"></i>
+                    <span id="viewToggleText">Grid View</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Flashcards Container -->
+        <div class="flashcards-container">
+            <div class="flashcards-grid" id="flashcardsGrid">
+                {% for card in generation.flashcards %}
+                <div class="flashcard" onclick="flipCard(this)">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div class="card-header">
+                                <span class="card-number">#{{ loop.index }}</span>
+                                <i class="fas fa-sync-alt flip-hint"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="question-icon">
+                                    <i class="fas fa-question"></i>
+                                </div>
+                                <p class="card-text">{{ card.front }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="tap-to-reveal">Tap to reveal answer</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flashcard-back">
+                            <div class="card-header">
+                                <span class="card-number">#{{ loop.index }}</span>
+                                <i class="fas fa-sync-alt flip-hint"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="answer-icon">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <p class="card-text">{{ card.back }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="tap-to-question">Tap to see question</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- List View -->
+            <div class="flashcards-list" id="flashcardsList" style="display: none;">
+                {% for card in generation.flashcards %}
+                <div class="flashcard-item">
+                    <div class="flashcard-item-header">
+                        <span class="item-number">#{{ loop.index }}</span>
+                        <div class="item-actions">
+                            <button class="btn-icon" onclick="copyCard({{ loop.index0 }})">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flashcard-item-content">
+                        <div class="question-section">
+                            <h4><i class="fas fa-question-circle"></i> Question</h4>
+                            <p>{{ card.front }}</p>
+                        </div>
+                        <div class="answer-section">
+                            <h4><i class="fas fa-lightbulb"></i> Answer</h4>
+                            <p>{{ card.back }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="statistics-section">
+            <h3><i class="fas fa-chart-bar"></i> Generation Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ generation.total_cards }}</div>
+                    <div class="stat-label">Total Flashcards</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ generation.processing_time }}s</div>
+                    <div class="stat-label">Generation Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ generation.created_at[:10] }}</div>
+                    <div class="stat-label">Created On</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Footer -->
+        <footer class="footer">
+            <div class="footer-main">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <i class="fas fa-home"></i>
+                            <span>Smart Learning</span>
+                        </div>
+                        <p class="footer-tagline">Empowering education through AI innovation</p>
+                        <div class="footer-social">
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Learning Tools</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Flashcards Generator</a></li>
+                        <li><a href="/summary">AI Summarizer</a></li>
+                        <li><a href="/quiz">Quiz Creator</a></li>
+                        <li><a href="/study-plan">Study Planner</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/docs">Documentation</a></li>
+                        <li><a href="/tutorials">Tutorials</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/api">API Reference</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/community">Community</a></li>
+                        <li><a href="/status">System Status</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 Smart Learning Platform. All rights reserved.</p>
+                </div>
+                <div class="footer-legal">
+                    <span class="footer-badge">
+                        <i class="fas fa-shield-check"></i>
+                        SOC 2 Certified
+                    </span>
+                    <span class="footer-badge">
+                        <i class="fas fa-lock"></i>
+                        GDPR Compliant
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Hidden JSON for JavaScript -->
+    <script type="application/json" id="flashcards-data">
+        {{ generation.flashcards | tojson }}
+    </script>
+
+    <!-- Scripts -->
+    <script src="/static/app.js"></script>
+    <script src="/static/results.js"></script>
+</body>
+</html>

@@ -66,7 +66,7 @@ class LMStudioClient:
     
     def __init__(self, settings: Optional[Settings] = None):
         self.settings = settings or get_settings()
-        self.base_url = self.settings.get_lm_studio_url()
+        self.base_url = self.settings.lm_studio.base_url.rstrip('/')
         self.timeout = self.settings.lm_studio.timeout
         self.max_retries = self.settings.lm_studio.max_retries
         
@@ -94,7 +94,7 @@ class LMStudioClient:
     async def test_connection(self) -> Tuple[bool, Optional[str]]:
         """Test connection to LM Studio server."""
         try:
-            response = await self.client.get(f"{self.base_url}/models")
+            response = await self.client.get(f"{self.base_url}/v1/models")
             if response.status_code == 200:
                 return True, None
             else:
@@ -113,7 +113,7 @@ class LMStudioClient:
             return self._available_models
         
         try:
-            response = await self.client.get(f"{self.base_url}/models")
+            response = await self.client.get(f"{self.base_url}/v1/models")
             response.raise_for_status()
             
             data = response.json()
@@ -248,7 +248,7 @@ class LMStudioClient:
         
         try:
             response = await self.client.post(
-                f"{self.base_url}/chat/completions",
+                f"{self.base_url}/v1/chat/completions",
                 json=request_data.model_dump()
             )
             response.raise_for_status()

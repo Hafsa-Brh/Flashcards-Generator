@@ -24,14 +24,14 @@ class LMStudioConfig(BaseModel):
     )
     api_key: Optional[str] = Field(
         default=None,
-        description="API key if required (usually not needed for local LM Studio)"
+        description="API key if required (usually not needed for LM Studio)"
     )
     model_name: Optional[str] = Field(
-        default="qwen3-4b-instruct-2507@q4_k_m",
+        default=None,
         description="Specific model to use (auto-selected if None)"
     )
     timeout: int = Field(
-        default=60,
+        default=120,
         description="Request timeout in seconds"
     )
     max_retries: int = Field(
@@ -45,7 +45,7 @@ class LMStudioConfig(BaseModel):
         description="Sampling temperature for generation"
     )
     max_tokens: int = Field(
-        default=512,
+        default=2500,
         ge=1,
         le=4096,
         description="Maximum tokens to generate"
@@ -129,6 +129,12 @@ class CardGenerationConfig(BaseModel):
     auto_tag: bool = Field(
         default=True,
         description="Automatically generate tags from content"
+    )
+    rate_limit_delay: float = Field(
+        default=0.5,
+        ge=0.0,
+        le=10.0,
+        description="Delay between API requests in seconds"
     )
     
     @validator('min_cards_per_chunk')

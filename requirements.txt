@@ -17,6 +17,9 @@ markdown==3.5.1
 tiktoken==0.5.2
 nltk==3.8.1
 
+# Anki export
+genanki==0.13.0
+
 # CLI and UI
 rich==13.7.0
 streamlit==1.28.1

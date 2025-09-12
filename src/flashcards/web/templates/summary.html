@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summarizer | AI-Powered Education Platform</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <!-- Navigation Bar -->
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <div class="logo">
+                        <i class="fas fa-home"></i>
+                        <span>Smart Learning</span>
+                    </div>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-cards-blank"></i>
+                        <span>Flashcards</span>
+                    </a>
+                    <a href="/summary" class="nav-link active">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Summary</span>
+                    </a>
+                    <a href="/quiz" class="nav-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Quiz</span>
+                    </a>
+                    <a href="/study-plan" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Study Plan</span>
+                    </a>
+                    <a href="/dashboard" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-user"></i>
+                        <span>Account</span>
+                    </button>
+                </div>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+            
+            <div class="header-decoration"></div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="hero-section">
+                <h1 class="hero-title">
+                    <span class="gradient-text">AI Document</span>
+                    <span class="subtitle">Summarizer</span>
+                </h1>
+                <p class="hero-description">
+                    Upload your documents and let our AI create intelligent, concise summaries 
+                    that capture the key information and main points. Perfect for research and study.
+                </p>
+            </div>
+
+            <!-- Configuration Section -->
+            <div class="config-section" id="configSection">
+                <div class="config-container">
+                    <div class="config-header">
+                        <h3>
+                            <i class="fas fa-cog"></i>
+                            Summary Configuration
+                        </h3>
+                        <p>Customize your summary generation settings</p>
+                    </div>
+                    
+                    <div class="config-grid">
+                        <!-- AI Model Display (Read-only) -->
+                        <div class="config-group">
+                            <label for="modelDisplay">
+                                <i class="fas fa-brain"></i>
+                                AI Model
+                            </label>
+                            <div class="model-display-box">
+                                <div class="selected-model-info">
+                                    <i class="fas fa-robot"></i>
+                                    <span><strong>QWEN3 30B A3B</strong> - Premium AI Model</span>
+                                    <div class="model-badge">Best Quality</div>
+                                </div>
+                            </div>
+                            <small class="help-text">Using the highest quality model for best results</small>
+                        </div>
+
+                        <!-- Chunk Size -->
+                        <div class="config-group">
+                            <label for="chunkSize">
+                                <i class="fas fa-cut"></i>
+                                Chunk Size (words)
+                            </label>
+                            <div class="slider-container">
+                                <input type="range" id="chunkSize" min="100" max="400" value="200" step="25" class="form-slider">
+                                <div class="slider-value">
+                                    <span id="chunkSizeValue">200</span> words
+                                </div>
+                            </div>
+                            <small class="help-text">Smaller chunks ensure reliable processing</small>
+                        </div>
+
+                        <!-- Overlap Words -->
+                        <div class="config-group">
+                            <label for="overlapWords">
+                                <i class="fas fa-link"></i>
+                                Overlap (words)
+                            </label>
+                            <div class="slider-container">
+                                <input type="range" id="overlapWords" min="0" max="30" value="10" step="5" class="form-slider">
+                                <div class="slider-value">
+                                    <span id="overlapWordsValue">10</span> words
+                                </div>
+                            </div>
+                            <small class="help-text">Recommended: 10 words for optimal context</small>
+                        </div>
+
+                        <!-- Summary Length per Chunk -->
+                        <div class="config-group">
+                            <label for="summaryLength">
+                                <i class="fas fa-ruler-horizontal"></i>
+                                Summary per Chunk (words)
+                            </label>
+                            <div class="slider-container">
+                                <input type="range" id="summaryLength" min="75" max="200" value="120" step="25" class="form-slider">
+                                <div class="slider-value">
+                                    <span id="summaryLengthValue">120</span> words
+                                </div>
+                            </div>
+                            <small class="help-text">Length of summary for each text chunk</small>
+                        </div>
+
+                        <!-- Final Summary Length -->
+                        <div class="config-group">
+                            <label for="finalSummaryLength">
+                                <i class="fas fa-file-alt"></i>
+                                Final Summary (words)
+                            </label>
+                            <div class="slider-container">
+                                <input type="range" id="finalSummaryLength" min="200" max="600" value="350" step="50" class="form-slider">
+                                <div class="slider-value">
+                                    <span id="finalSummaryLengthValue">350</span> words
+                                </div>
+                            </div>
+                            <small class="help-text">Target length of the final combined summary</small>
+                        </div>
+
+                        <!-- Processing Quality -->
+                        <div class="config-group">
+                            <label for="processingQuality">
+                                <i class="fas fa-award"></i>
+                                Processing Quality
+                            </label>
+                            <select id="processingQuality" class="form-select">
+                                <option value="fast">Fast (Standard)</option>
+                                <option value="balanced" selected>Balanced (Recommended)</option>
+                                <option value="high">High Quality (Slower)</option>
+                            </select>
+                            <small class="help-text">Higher quality uses more advanced processing</small>
+                        </div>
+                    </div>
+
+                    <!-- Configuration Presets -->
+                    <div class="config-presets">
+                        <h4>
+                            <i class="fas fa-magic"></i>
+                            Quick Presets
+                        </h4>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" id="presetFast" data-preset="fast">
+                                <i class="fas fa-bolt"></i>
+                                Fast & Quick
+                            </button>
+                            <button class="preset-btn active" id="presetBalanced" data-preset="balanced">
+                                <i class="fas fa-balance-scale"></i>
+                                Balanced
+                            </button>
+                            <button class="preset-btn" id="presetDetailed" data-preset="detailed">
+                                <i class="fas fa-microscope"></i>
+                                Detailed Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Toggle Advanced Settings -->
+                    <div class="advanced-toggle">
+                        <button id="advancedToggle" class="btn btn-outline btn-sm">
+                            <i class="fas fa-cog"></i>
+                            <span>Show Advanced Settings</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <div class="upload-container" id="uploadContainer">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">
+                            <h3>Drop your files here</h3>
+                            <p>or <span class="browse-link">browse to upload</span></p>
+                        </div>
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md,.html" hidden>
+                    </div>
+                    
+                    <div class="supported-formats">
+                        <h4>Supported Formats:</h4>
+                        <div class="format-tags">
+                            <span class="format-tag">PDF</span>
+                            <span class="format-tag">DOCX</span>
+                            <span class="format-tag">TXT</span>
+                            <span class="format-tag">MD</span>
+                            <span class="format-tag">HTML</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing Status -->
+            <div class="processing-section" id="processingSection" style="display: none;">
+                <div class="processing-card">
+                    <div class="processing-header">
+                        <div class="processing-icon">
+                            <i class="fas fa-cog fa-spin"></i>
+                        </div>
+                        <h3>Generating Your Summary</h3>
+                        <p id="processingFile">Processing...</p>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="progressPercent">0%</span>
+                            <span id="progressStatus">Initializing...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="processing-steps">
+                        <div class="step" id="step-load">
+                            <i class="fas fa-file-upload"></i>
+                            <span>Loading document</span>
+                        </div>
+                        <div class="step" id="step-process">
+                            <i class="fas fa-magic"></i>
+                            <span>AI processing</span>
+                        </div>
+                        <div class="step" id="step-generate">
+                            <i class="fas fa-file-text"></i>
+                            <span>Creating summary</span>
+                        </div>
+                        <div class="step" id="step-complete">
+                            <i class="fas fa-check"></i>
+                            <span>Complete!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <h2>Why Use Our AI Summarizer?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Intelligent Analysis</h3>
+                        <p>Advanced AI models analyze your documents to extract key concepts and main ideas</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-compress"></i>
+                        </div>
+                        <h3>Smart Compression</h3>
+                        <p>Preserve essential information while reducing length, perfect for quick understanding</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Multi-Format Support</h3>
+                        <p>Process PDFs, Word documents, text files, Markdown, and HTML content seamlessly</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h3>Export Options</h3>
+                        <p>Download your summaries as text files for easy integration with your workflow</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Time Saving</h3>
+                        <p>Quickly digest long documents and focus on what matters most for your research</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h3>High Accuracy</h3>
+                        <p>Maintain context and accuracy while creating coherent, readable summaries</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Professional Footer -->
+        <footer class="footer">
+            <div class="footer-main">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <i class="fas fa-home"></i>
+                            <span>Smart Learning</span>
+                        </div>
+                        <p class="footer-tagline">Empowering education through AI innovation</p>
+                        <div class="footer-social">
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Learning Tools</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Flashcards Generator</a></li>
+                        <li><a href="/summary">AI Summarizer</a></li>
+                        <li><a href="/quiz">Quiz Creator</a></li>
+                        <li><a href="/study-plan">Study Planner</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/docs">Documentation</a></li>
+                        <li><a href="/tutorials">Tutorials</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/api">API Reference</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/community">Community</a></li>
+                        <li><a href="/status">System Status</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 Smart Learning Platform. All rights reserved.</p>
+                </div>
+                <div class="footer-legal">
+                    <span class="footer-badge">
+                        <i class="fas fa-shield-check"></i>
+                        SOC 2 Certified
+                    </span>
+                    <span class="footer-badge">
+                        <i class="fas fa-lock"></i>
+                        GDPR Compliant
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/summary.js"></script>
+</body>
+</html>

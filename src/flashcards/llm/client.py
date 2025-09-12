@@ -146,7 +146,12 @@ class LMStudioClient:
         
         # Priority order for flashcard generation (adjust based on your models)
         preferred_models = [
-            # Qwen models - excellent for Q&A generation
+            # Prioritize QWEN3 30B A3B model for best results
+            "qwen3-30b-a3b",
+            "qwen/qwen3-30b-a3b",
+            "qwen3",
+            
+            # Other Qwen models - excellent for Q&A generation
             "qwen2.5",
             "qwen2",
             "qwen",
@@ -177,16 +182,19 @@ class LMStudioClient:
         # Find the best match
         model_ids = [m.id.lower() for m in models]
         
+        logger.info(f"Available models: {[m.id for m in models]}")  # Debug log
+        logger.info(f"Looking for preferred models in order: {preferred_models[:5]}...")  # Show first 5 preferences
+        
         for preferred in preferred_models:
             for i, model_id in enumerate(model_ids):
                 if preferred in model_id:
                     selected_model = models[i].id
-                    logger.info(f"Selected model: {selected_model}")
+                    logger.info(f"Selected model: {selected_model} (matched '{preferred}' pattern)")
                     return selected_model
         
         # If no preferred model found, use the first one
         selected_model = models[0].id
-        logger.info(f"No preferred model found, using: {selected_model}")
+        logger.info(f"No preferred model found, using first available: {selected_model}")
         return selected_model
     
     async def initialize_model(self) -> str:

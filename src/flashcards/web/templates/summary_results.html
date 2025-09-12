@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summary | Smart Learning</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/results.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <div class="logo">
+                        <i class="fas fa-home"></i>
+                        <span>Smart Learning</span>
+                    </div>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-cards-blank"></i>
+                        <span>Flashcards</span>
+                    </a>
+                    <a href="/summary" class="nav-link active">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Summary</span>
+                    </a>
+                    <a href="/quiz" class="nav-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Quiz</span>
+                    </a>
+                    <a href="/study-plan" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Study Plan</span>
+                    </a>
+                    <a href="/dashboard" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="btn btn-outline btn-sm">
+                        <i class="fas fa-user"></i>
+                        <span>Account</span>
+                    </button>
+                </div>
+            </nav>
+            <div class="header-decoration"></div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Results Header -->
+            <div class="results-header">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1 class="results-title">Summary Generated Successfully!</h1>
+                <p class="results-subtitle">Your document has been processed and summarized</p>
+            </div>
+
+            <!-- Stats and Actions Section -->
+            <div class="stats-actions-section">
+                <!-- Statistics Cards -->
+                <div class="stats-section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-file-text"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number">{{ stats.chunks_count }}</span>
+                                <span class="stat-label">Sections Analyzed</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-font"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number">{{ stats.original_word_count }}</span>
+                                <span class="stat-label">Words Extracted</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number">{{ "%.1f"|format(stats.processing_time) }}s</span>
+                                <span class="stat-label">Generation Time</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-compress-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number">{{ stats.word_count }}</span>
+                                <span class="stat-label">Summary Words</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="actions-section">
+                    <div class="action-buttons">
+                        <button id="downloadSummary" class="btn btn-primary">
+                            <i class="fas fa-download"></i>
+                            <span>Download Summary</span>
+                        </button>
+                        
+                        <a href="/summary" class="btn btn-outline">
+                            <i class="fas fa-plus"></i>
+                            <span>New Summary</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Display -->
+            <div class="summary-section">
+                <div class="summary-container">
+                    <div class="summary-header">
+                        <h2><i class="fas fa-file-alt"></i> Document Summary</h2>
+                        <div class="summary-meta">
+                            <span class="filename">{{ filename }}</span>
+                            <span class="word-count">{{ stats.word_count }} words</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-content" id="summaryContent">
+                        {{ summary|safe }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to top button -->
+            <button class="back-to-top" id="backToTop" title="Back to top">
+                <i class="fas fa-chevron-up"></i>
+            </button>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-main">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <i class="fas fa-home"></i>
+                            <span>Smart Learning</span>
+                        </div>
+                        <p class="footer-tagline">Empowering education through AI innovation</p>
+                        <div class="footer-social">
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Learning Tools</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Flashcards Generator</a></li>
+                        <li><a href="/summary">AI Summarizer</a></li>
+                        <li><a href="/quiz">Quiz Creator</a></li>
+                        <li><a href="/study-plan">Study Planner</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/docs">Documentation</a></li>
+                        <li><a href="/tutorials">Tutorials</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/api">API Reference</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/community">Community</a></li>
+                        <li><a href="/status">System Status</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 Smart Learning Platform. All rights reserved.</p>
+                </div>
+                <div class="footer-legal">
+                    <span class="footer-badge">
+                        <i class="fas fa-shield-check"></i>
+                        SOC 2 Certified
+                    </span>
+                    <span class="footer-badge">
+                        <i class="fas fa-lock"></i>
+                        GDPR Compliant
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Hidden data for JavaScript -->
+    <script type="application/json" id="summaryData">
+        {
+            "summary": {{ summary|tojson }},
+            "filename": {{ filename|tojson }},
+            "stats": {{ stats|tojson }}
+        }
+    </script>
+
+    <!-- Scripts -->
+    <script src="/static/summary-results.js"></script>
+</body>
+</html>

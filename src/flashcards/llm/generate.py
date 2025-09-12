@@ -29,6 +29,9 @@ class FlashcardGenerator:
         # Load generation prompt template
         self.prompt_template = self._load_prompt_template()
         
+        # Force use of the best model for flashcard generation
+        self.preferred_model = "qwen/qwen3-30b-a3b-2507"
+        
     def _load_prompt_template(self) -> str:
         """Load the flashcard generation prompt template."""
         try:
@@ -92,9 +95,10 @@ Output Format (JSON only, no other text):
                 ChatMessage(role="user", content=prompt)
             ]
             
-            # Generate response from LLM
+            # Generate response from LLM using the preferred model
             response = await self.client.chat_completion(
                 messages=messages,
+                model=self.preferred_model,  # Explicitly use QWEN3 30B model
                 temperature=self.settings.lm_studio.temperature,
                 max_tokens=self.settings.lm_studio.max_tokens
             )

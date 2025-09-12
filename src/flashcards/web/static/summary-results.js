@@ -1,0 +1,301 @@
+// AI Document Summarizer Results - JavaScript
+// Handle summary display, interactions, and downloads
+
+class SummaryResultsApp {
+    constructor() {
+        this.summaryData = null;
+        this.init();
+    }
+
+    init() {
+        this.loadSummaryData();
+        this.setupEventListeners();
+        this.setupBackToTop();
+        this.animateOnLoad();
+    }
+
+    loadSummaryData() {
+        // Load data from the hidden script tag
+        const dataScript = document.getElementById('summaryData');
+        if (dataScript) {
+            try {
+                this.summaryData = JSON.parse(dataScript.textContent);
+                console.log('📊 Summary data loaded:', this.summaryData);
+            } catch (error) {
+                console.error('❌ Error loading summary data:', error);
+            }
+        }
+    }
+
+    setupEventListeners() {
+        // Download summary button
+        const downloadBtn = document.getElementById('downloadSummary');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => this.downloadSummary());
+        }
+
+        // Copy button removed - no longer needed
+
+        // Handle mobile menu if present
+        this.setupMobileMenu();
+    }
+
+    setupMobileMenu() {
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (mobileMenuToggle && navLinks) {
+            mobileMenuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('mobile-open');
+                
+                // Animate icon
+                const icon = mobileMenuToggle.querySelector('i');
+                if (navLinks.classList.contains('mobile-open')) {
+                    icon.className = 'fas fa-times';
+                } else {
+                    icon.className = 'fas fa-bars';
+                }
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!mobileMenuToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                    navLinks.classList.remove('mobile-open');
+                    const icon = mobileMenuToggle.querySelector('i');
+                    icon.className = 'fas fa-bars';
+                }
+            });
+        }
+    }
+
+    setupBackToTop() {
+        const backToTopBtn = document.getElementById('backToTop');
+        if (!backToTopBtn) return;
+
+        // Show/hide button based on scroll position
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.display = 'flex';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        });
+
+        // Scroll to top when clicked
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    async downloadSummary() {
+        if (!this.summaryData) {
+            console.error('❌ No summary data available for download');
+            this.showNotification('No summary data available', 'error');
+            return;
+        }
+
+        try {
+            // Create downloadable content
+            const content = this.formatSummaryForDownload();
+            const filename = this.generateFilename();
+            
+            // Create and trigger download
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+            
+            console.log('💾 Summary downloaded as:', filename);
+            this.showNotification('Summary downloaded successfully!', 'success');
+            
+        } catch (error) {
+            console.error('❌ Download error:', error);
+            this.showNotification('Failed to download summary', 'error');
+        }
+    }
+
+    // Copy functionality removed - no longer needed
+
+    formatSummaryForDownload() {
+        const { summary, filename, stats } = this.summaryData;
+        
+        const formattedContent = `# Document Summary
+
+**Original Document:** ${filename}
+**Generated:** ${new Date().toLocaleString()}
+**Sections Analyzed:** ${stats.chunks_count}
+**Original Words:** ${stats.original_word_count}
+**Summary Words:** ${stats.word_count}
+**Processing Time:** ${stats.processing_time.toFixed(1)}s
+
+---
+
+## Summary
+
+${summary}
+
+---
+
+*Generated by Smart Learning AI Document Summarizer*
+`;
+        
+        return formattedContent;
+    }
+
+    generateFilename() {
+        const originalFilename = this.summaryData.filename || 'document';
+        const baseName = originalFilename.replace(/\.[^/.]+$/, ''); // Remove extension
+        const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        return `${baseName}_summary_${timestamp}.txt`;
+    }
+
+    showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(n => n.remove());
+
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        
+        const icon = type === 'success' ? 'fas fa-check-circle' : 
+                    type === 'error' ? 'fas fa-exclamation-circle' : 
+                    'fas fa-info-circle';
+        
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="${icon}"></i>
+                <span>${message}</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+
+        // Add to page
+        document.body.appendChild(notification);
+
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (notification && notification.parentElement) {
+                notification.classList.add('notification-fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, 5000);
+
+        // Animate in
+        setTimeout(() => {
+            notification.classList.add('notification-show');
+        }, 100);
+    }
+
+    animateOnLoad() {
+        // Animate elements on page load
+        const animatedElements = document.querySelectorAll(
+            '.results-header, .stats-section, .actions-section, .summary-container'
+        );
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        animatedElements.forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = `opacity 0.6s ease ${index * 0.15}s, transform 0.6s ease ${index * 0.15}s`;
+            observer.observe(el);
+        });
+
+        // Animate stats numbers
+        this.animateStatsNumbers();
+    }
+
+    animateStatsNumbers() {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    this.animateNumber(entry.target);
+                }
+            });
+        });
+        
+        statNumbers.forEach(el => observer.observe(el));
+    }
+
+    animateNumber(element) {
+        const finalValue = element.textContent;
+        const isFloat = finalValue.includes('.');
+        const isPercentage = finalValue.includes('%');
+        const isTime = finalValue.includes('s');
+        
+        let numericValue = parseFloat(finalValue.replace(/[^\d.]/g, ''));
+        
+        if (isNaN(numericValue)) return;
+        
+        let currentValue = 0;
+        const increment = numericValue / 30; // 30 steps
+        const duration = 1500; // 1.5 seconds
+        const stepTime = duration / 30;
+        
+        const timer = setInterval(() => {
+            currentValue += increment;
+            
+            if (currentValue >= numericValue) {
+                currentValue = numericValue;
+                clearInterval(timer);
+            }
+            
+            let displayValue;
+            if (isFloat && !isPercentage && !isTime) {
+                displayValue = currentValue.toFixed(1);
+            } else {
+                displayValue = Math.round(currentValue).toString();
+            }
+            
+            if (isPercentage) displayValue += '%';
+            if (isTime) displayValue += 's';
+            
+            element.textContent = displayValue;
+        }, stepTime);
+    }
+}
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Summary Results App initialized');
+    new SummaryResultsApp();
+});
+
+// Global error handler
+window.addEventListener('error', (e) => {
+    console.error('💥 Global error:', e.error);
+});
+
+// Handle page visibility changes
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        console.log('📱 Page hidden');
+    } else {
+        console.log('📱 Page visible');
+    }
+});

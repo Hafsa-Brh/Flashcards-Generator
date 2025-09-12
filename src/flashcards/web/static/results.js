@@ -228,6 +228,59 @@ class ResultsPage {
         }
     }
 
+    async exportToAnki() {
+        const exportBtn = document.getElementById('ankiExportBtn');
+        if (!exportBtn) return;
+
+        // Get the generation ID from the current URL
+        const pathParts = window.location.pathname.split('/');
+        const generationId = pathParts[pathParts.length - 1];
+
+        try {
+            // Disable button and show loading state
+            exportBtn.disabled = true;
+            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+
+            // Make the export request
+            const response = await fetch(`/api/export/anki/${generationId}`);
+            
+            if (!response.ok) {
+                throw new Error(`Export failed: ${response.statusText}`);
+            }
+
+            // Get the filename from the response headers
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = 'flashcards.apkg';
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename=(.+)/);
+                if (filenameMatch) {
+                    filename = filenameMatch[1].replace(/"/g, '');
+                }
+            }
+
+            // Download the file
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            this.showNotification('Anki deck exported successfully!', 'success');
+
+        } catch (error) {
+            console.error('Export failed:', error);
+            this.showNotification(`Export failed: ${error.message}`, 'error');
+        } finally {
+            // Reset button state
+            exportBtn.disabled = false;
+            exportBtn.innerHTML = '<i class="fas fa-download"></i> Export to Anki';
+        }
+    }
+
     handleKeyboardNavigation(e) {
         // Space bar to flip cards in grid view
         if (e.code === 'Space' && this.viewMode === 'grid') {
@@ -480,3 +533,39 @@ const notificationCSS = `
 const notificationStyleSheet = document.createElement('style');
 notificationStyleSheet.textContent = notificationCSS;
 document.head.appendChild(notificationStyleSheet);
+
+// Global functions for HTML onclick handlers
+function exportToAnki() {
+    if (window.resultsPage) {
+        window.resultsPage.exportToAnki();
+    }
+}
+
+function copyToClipboard() {
+    if (window.resultsPage) {
+        window.resultsPage.copyAllToClipboard();
+    }
+}
+
+function toggleViewMode() {
+    if (window.resultsPage) {
+        window.resultsPage.toggleViewMode();
+    }
+}
+
+function flipCard(cardElement) {
+    if (window.resultsPage) {
+        window.resultsPage.flipCard(cardElement);
+    }
+}
+
+function copyCard(index) {
+    if (window.resultsPage) {
+        window.resultsPage.copyCard(index);
+    }
+}
+
+// Initialize the results page when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    window.resultsPage = new ResultsPage();
+});
